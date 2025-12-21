@@ -7,13 +7,17 @@ import os
 # -------------------------------
 # Config and file paths
 # -------------------------------
-MODELS_DIR = "models"
-DASH_DIR = "dashboards"
+MODELS_DIR = "Models"
+DASHBOARDS_DIR = "Dashboards"
+DATA_DIR = "Data"
 
 METRICS_PATH = os.path.join(MODELS_DIR, "metrics_summary.csv")
-GLOBAL_IMPORTANCE_PATH = os.path.join(MODELS_DIR, "shap_feature_importance_bp.csv")
-TX_SHAP_PATH = os.path.join(DASH_DIR, "shap_transaction_values_bp.csv")
-COMP_PATH = os.path.join(DASH_DIR, "shap_fraud_vs_nonfraud_bp.csv")
+SHAP_FEATURE_PATH = os.path.join(MODELS_DIR, "shap_feature_importance_bp.csv")
+FRAUD_VS_NONFRAUD_PATH = os.path.join(DASHBOARDS_DIR, "shap_fraud_vs_nonfraud_bp.csv")
+TRANSACTION_VALUES_PATH = os.path.join(DASHBOARDS_DIR, "shap_transaction_values_bp.csv")
+CLEANED_DATA_PATH = os.path.join(DATA_DIR, "cleaned_Data.csv")
+HYBRID_EVAL_PATH = os.path.join(DATA_DIR, "hybrid_eval_test.csv")
+
 
 # -------------------------------
 # Sidebar
@@ -33,9 +37,12 @@ def load_csv(path):
     return pd.read_csv(path)
 
 metrics = load_csv(METRICS_PATH)
-importance = load_csv(GLOBAL_IMPORTANCE_PATH)
-transactions = load_csv(TX_SHAP_PATH)
-comparison = load_csv(COMP_PATH)
+shap_feature_df = load_csv(SHAP_FEATURE_PATH)
+fraud_vs_nonfraud_df = load_csv(FRAUD_VS_NONFRAUD_PATH)
+transaction_values_df = load_csv(TRANSACTION_VALUES_PATH)
+cleaned_df = load_csv(CLEANED_DATA_PATH)
+hybrid_eval_df = load_csv(HYBRID_EVAL_PATH)
+
 
 # -------------------------------
 # Overview
