@@ -7,16 +7,16 @@ import os
 # -------------------------------
 # Config and file paths
 # -------------------------------
-MODELS_DIR = "Models"
-DASHBOARDS_DIR = "Dashboard"
-DATA_DIR = "Data"
+Models_DIR = "Models"
+Dashboard_DIR = "Dashboard"
+Data_DIR = "Data"
 
-METRICS_PATH = os.path.join(MODELS_DIR, "metrics_summary.csv")
-SHAP_FEATURE_PATH = os.path.join(MODELS_DIR, "shap_feature_importance_bp.csv")
-FRAUD_VS_NONFRAUD_PATH = os.path.join(DASHBOARDS_DIR, "shap_fraud_vs_nonfraud_bp.csv")
-TRANSACTION_VALUES_PATH = os.path.join(DASHBOARDS_DIR, "shap_transaction_values_bp.csv")
-CLEANED_DATA_PATH = os.path.join(DATA_DIR, "cleaned_Data.csv")
-HYBRID_EVAL_PATH = os.path.join(DATA_DIR, "hybrid_eval_test.csv")
+METRICS_PATH = os.path.join(Models_DIR, "metrics_summary.csv")
+SHAP_FEATURE_PATH = os.path.join(Models_DIR, "shap_feature_importance_bp.csv")
+FRAUD_VS_NONFRAUD_PATH = os.path.join(Dashboard_DIR, "shap_fraud_vs_nonfraud_bp.csv")
+TRANSACTION_VALUES_PATH = os.path.join(Dashboard_DIR, "shap_transaction_values_bp.csv")
+CLEANED_DATA_PATH = os.path.join(Data_DIR, "cleaned_Data.csv")
+HYBRID_EVAL_PATH = os.path.join(Models_DIR, "hybrid_eval_test.csv")
 
 
 # -------------------------------
@@ -71,6 +71,7 @@ if page == "Overview":
 # -------------------------------
 elif page == "Feature Importance":
     st.header("🔍 Global feature importance (SHAP)")
+    importance = shap_feature_df  # FIX: define importance
     st.bar_chart(importance.set_index("Feature"))
     st.caption("Higher mean absolute SHAP indicates stronger influence on predictions.")
 
@@ -79,21 +80,27 @@ elif page == "Feature Importance":
 # -------------------------------
 elif page == "Behavior Profiling":
     st.header("🧠 Behavior profiling signals")
+
+    # Use cleaned_df or hybrid_eval_df as your transactions source
+    transactions = hybrid_eval_df  
+
     if "BehaviorRisk" in transactions.columns:
         st.write("Behavior risk distribution")
-        st.line_chart(transactions["BehaviorRisk"].value_counts().sort_index())  # simple view
+        st.line_chart(transactions["BehaviorRisk"].value_counts().sort_index())
     else:
         st.info("BehaviorRisk not found in transactions CSV. Ensure Step 3.5 outputs include it.")
 
     st.subheader("Fraud vs Non-Fraud SHAP averages")
+    comparison = fraud_vs_nonfraud_df  # FIX: define comparison
     st.dataframe(comparison)
-
 # -------------------------------
 # Transaction drill-down
 # -------------------------------
 elif page == "Transaction Drill-Down":
     st.header("🚨 Transaction drill-down with alerts")
-    # Apply dynamic threshold on-the-fly
+
+    transactions = hybrid_eval_df  # FIX: define transactions
+
     if "HybridScore" in transactions.columns:
         tx = transactions.copy()
         tx["AlertDynamic"] = (tx["HybridScore"] >= threshold).astype(int)
@@ -117,9 +124,9 @@ elif page == "Try your own data":
         st.write("Preview:", user_df.head())
 
         # Load models
-        xgb_path = os.path.join(MODELS_DIR, "xgb_model.joblib")
-        iso_path = os.path.join(MODELS_DIR, "isolation_forest.joblib")
-        scaler_path = os.path.join(MODELS_DIR, "scaler.joblib")
+        xgb_path = os.path.join(Models_DIR, "xgb_model.joblib")
+        iso_path = os.path.join(Models_DIR, "isolation_forest.joblib")
+        scaler_path = os.path.join(Models_DIR, "scaler.joblib")
 
         if not (os.path.exists(xgb_path) and os.path.exists(iso_path)):
             st.error("Model files not found. Ensure xgb_model.joblib and isolation_forest.joblib exist in models/")
